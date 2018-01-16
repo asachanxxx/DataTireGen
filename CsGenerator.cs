@@ -217,18 +217,19 @@ namespace DataTierGenerator
 				streamWriter.WriteLine("}");
 			}
 		}
-		
-		/// <summary>
-		/// Creates a C# data access class for all of the table's stored procedures.
-		/// </summary>
-		/// <param name="databaseName">The name of the database.</param>
-		/// <param name="table">Instance of the Table class that represents the table this class will be created for.</param>
-		/// <param name="targetNamespace">The namespace that the generated C# classes should contained in.</param>
-		/// <param name="storedProcedurePrefix">Prefix to be appended to the name of the stored procedure.</param>
-		/// <param name="daoSuffix">The suffix to be appended to the data access class.</param>
+
+      
+        /// <summary>
+        /// Creates a C# data access class for all of the table's stored procedures.
+        /// </summary>
+        /// <param name="databaseName">The name of the database.</param>
+        /// <param name="table">Instance of the Table class that represents the table this class will be created for.</param>
+        /// <param name="targetNamespace">The namespace that the generated C# classes should contained in.</param>
+        /// <param name="storedProcedurePrefix">Prefix to be appended to the name of the stored procedure.</param>
+        /// <param name="daoSuffix">The suffix to be appended to the data access class.</param>
         /// <param name="dtoSuffix">The suffix to append to the name of each data transfer class.</param>
-		/// <param name="path">Path where the class should be created.</param>
-		public static void CreateDataAccessClass(string databaseName, Table table, string targetNamespace, string storedProcedurePrefix, string daoSuffix, string dtoSuffix, string path)
+        /// <param name="path">Path where the class should be created.</param>
+        public static void CreateDataAccessClass(string databaseName, Table table, string targetNamespace, string storedProcedurePrefix, string daoSuffix, string dtoSuffix, string path)
 		{
 			string className = Utility.FormatClassName(table.Name) + daoSuffix;
 			path = Path.Combine(path, "Repositories");
@@ -571,44 +572,7 @@ namespace DataTierGenerator
 
             }
         }
-
-
-
-        /*
-          public override InvHed Save2(InvHed entity)
-        {
-            try
-            {
-                using (var scope = new TransactionScope())
-                {
-
-                    var param = new DynamicParameters();
-                    param.Add("@ID", value: entity.ID, dbType: DbType.Int32, direction: ParameterDirection.InputOutput);
-                    param.Add("@DocNo", value: entity.DocNo);
-                    param.Add("@Gross", value: entity.Gross);
-                    param.Add("@NetValue", value: entity.NetValue);
-
-                    Connection.Execute("SaveInvHead", param, commandType: CommandType.StoredProcedure);
-                    entity.ID = param.Get<int>("@ID");
-
-                    scope.Complete();
-                }
-                return entity;
-            }
-            catch (InvalidOperationException ioe)
-            {
-                throw new Exception(ErrorRepository.GetErrorMessage(ErrorNumbers.E1002));
-            }
-            catch (SqlException ex)
-            {
-                throw new Exception(ErrorRepository.GetErrorMessage(ErrorNumbers.E1001));
-            }
-            catch (Exception ex)
-            {
-                throw new Exception(ErrorRepository.GetErrorMessage(ErrorNumbers.E1000));
-            }
-        }
-         */
+       
 
         private static void CreateDapper(Table table, string storedProcedurePrefix, string dtoSuffix, StreamWriter streamWriter)
         {
@@ -676,6 +640,184 @@ namespace DataTierGenerator
             // Append the method footer
             streamWriter.WriteLine("\t\t");
             streamWriter.WriteLine();
+        }
+
+        internal static void WebApimethods(string databaseName, Table table, string targetNamespace, string storedProcedurePrefix, string daoSuffix, string dtoSuffix, string path)
+        {
+            //WebAPI
+
+            string className = Utility.FormatClassName(table.Name) + daoSuffix;
+            path = Path.Combine(path, "WebAPI");
+
+            using (StreamWriter streamWriter = new StreamWriter(Path.Combine(path, className + ".cs")))
+            {
+
+                CreateWebApiMethods(table, storedProcedurePrefix, dtoSuffix, streamWriter);
+
+            }
+        }
+
+        private static void CreateWebApiMethods(Table table, string storedProcedurePrefix, string dtoSuffix, StreamWriter streamWriter)
+        {
+            string className = Utility.FormatClassName(table.Name) + dtoSuffix;
+            string variableName = Utility.FormatVariableName(table.Name);
+
+            streamWriter.WriteLine("\\ className: " + className + " variableName - " + variableName);
+
+            streamWriter.WriteLine("");
+            streamWriter.WriteLine("\t");
+            streamWriter.WriteLine("\t\t");
+            streamWriter.WriteLine("\t\t\t");
+
+
+            streamWriter.WriteLine("using FSMS.ModelCS;");
+            streamWriter.WriteLine("using FSMS.Repository.Factory;");
+            streamWriter.WriteLine("using FSMS.Repository.RepositoryDapper;");
+            streamWriter.WriteLine("using System;");
+            streamWriter.WriteLine("using System.Collections.Generic;");
+            streamWriter.WriteLine("using System.Net;");
+            streamWriter.WriteLine("using System.Net.Http;");
+            streamWriter.WriteLine("using System.Threading.Tasks;");
+            streamWriter.WriteLine("using System.Web.Http;");
+            streamWriter.WriteLine("using System.Web.Http.Cors;");
+
+
+            streamWriter.WriteLine("namespace FSMS.UIAspNET.Controllers");
+            streamWriter.WriteLine("\t{");
+            streamWriter.WriteLine("\t[EnableCors(origins: \" * \", headers: \"*\", methods: \"*\", exposedHeaders: \"Message,Error\")]");
+            streamWriter.WriteLine("\t[RoutePrefix(\""+ className + "\")]");
+            streamWriter.WriteLine("\tpublic class " + className + "Controller : ApiController");
+            streamWriter.WriteLine("\t{");
+
+            streamWriter.WriteLine("\t\tGenericRepository <" + className + "> Repo;");
+            streamWriter.WriteLine("\t\tpublic " + className + "Controller()");
+            streamWriter.WriteLine("\t\t{");
+
+            streamWriter.WriteLine("\t\t\t Repo = new GenericRepository<" + className + ">(ConnectionFactory.GetOpenConnection(), \"FuelTypes\");");
+            streamWriter.WriteLine("\t\t}");
+
+            streamWriter.WriteLine("\t\t/*//////////////////////////////////////////////// Finalize methods /////////////////////////////////////////////////*/");
+            streamWriter.WriteLine("\t\t[Route(\"GetAll\")]");
+            streamWriter.WriteLine("\t\t[HttpGet]");
+            streamWriter.WriteLine("\t\tpublic async Task<HttpResponseMessage> GetAll()");
+            streamWriter.WriteLine("\t\t{");
+            streamWriter.WriteLine("\t\t\ttry");
+            streamWriter.WriteLine("\t\t\t{");
+            streamWriter.WriteLine("\t\t\t\t var response = Request.CreateResponse<IEnumerable<" + className + ">>(HttpStatusCode.OK, await Repo.AllAsync());");
+            streamWriter.WriteLine("\t\t\t\t response.Headers.Add(\"Message\", \"Passing test values\");");
+            streamWriter.WriteLine("\t\t\t\tresponse.Headers.Add(\"Error\", \"null\");");
+            streamWriter.WriteLine("\t\t\t\treturn response;");
+            streamWriter.WriteLine("\t\t\t}");
+            streamWriter.WriteLine("\t\t\t\t catch (Exception ex)");
+            streamWriter.WriteLine("\t\t\t\t {");
+            streamWriter.WriteLine("\t\t\t\t return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, new Exception(\"Error from Get all\", ex));");
+            streamWriter.WriteLine("\t\t\t\t}");
+            streamWriter.WriteLine("\t\t\t}");
+
+
+            streamWriter.WriteLine("\t\t        [Route(\"Get\")]");
+            streamWriter.WriteLine("\t\t[HttpGet]");
+            streamWriter.WriteLine("\t\tpublic async Task<HttpResponseMessage> Get(int id)");
+            streamWriter.WriteLine("\t\t{");
+            streamWriter.WriteLine("\t\t\ttry");
+            streamWriter.WriteLine("\t\t{");
+            streamWriter.WriteLine("\t\t\t\tvar stu = await Repo.FindAsync(id);");
+            streamWriter.WriteLine("\t\t\t\tif (stu == null)");
+            streamWriter.WriteLine("\t\t\t\t{");
+            streamWriter.WriteLine("\t\t\t\t    return Request.CreateErrorResponse(HttpStatusCode.NotFound, \"Fuel Type Not found\");");
+            streamWriter.WriteLine("\t\t\t\t}");
+            streamWriter.WriteLine("\t\t\t\telse");
+            streamWriter.WriteLine("\t\t\t\t{");
+            streamWriter.WriteLine("\t\t\t\tvar response = Request.CreateResponse<" + className + ">(HttpStatusCode.OK, stu);");
+            streamWriter.WriteLine("\t\t\t\tresponse.Headers.Add(\"Message\", \"Passing test values\");");
+            streamWriter.WriteLine("\t\t\t\treturn response;");
+            streamWriter.WriteLine("\t\t\t\t}");
+            streamWriter.WriteLine("\t\t\t}");
+            streamWriter.WriteLine("\t\t\tcatch (Exception ex)");
+            streamWriter.WriteLine("\t\t\t{");
+            streamWriter.WriteLine("\t\t\t\t    return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, new Exception(\"Error from Get all\", ex));");
+            streamWriter.WriteLine("\t\t}");
+            streamWriter.WriteLine("\t\t}");
+
+
+            streamWriter.WriteLine("\t\t [HttpPost, HttpGet]");
+            streamWriter.WriteLine("\t\t[Route(\"SaveAsync\")]");
+            streamWriter.WriteLine("\t\tpublic async Task<HttpResponseMessage> SaveAsync([FromBody]" + className + " Entity)");
+            streamWriter.WriteLine("\t\t{");
+            streamWriter.WriteLine("\t\t\ttry");
+            streamWriter.WriteLine("\t\t\t{");
+            streamWriter.WriteLine("\t\t\t\tint newid = await Repo.AddAsync(Entity);");
+            streamWriter.WriteLine("\t\t\t\tvar result = Request.CreateResponse<int>(HttpStatusCode.OK, newid);");
+            streamWriter.WriteLine("\t\t\t\tresult.Headers.Add(\"Message\", \"Record Saved Successfully\");");
+            streamWriter.WriteLine("\t\t\t\treturn result;");
+            streamWriter.WriteLine("\t\t\t}");
+            streamWriter.WriteLine("\t\t\tcatch (Exception ex)");
+            streamWriter.WriteLine("\t\t\t            {");
+            streamWriter.WriteLine("\t\t\t\treturn Request.CreateErrorResponse(HttpStatusCode.InternalServerError, new Exception(\"Custome message here at Save\", ex));");
+            streamWriter.WriteLine("\t\t\t}");
+            streamWriter.WriteLine("\t\t}");
+
+            streamWriter.WriteLine("\t\t[HttpPost, HttpGet]");
+            streamWriter.WriteLine("\t\t[Route(\"UpdateAsync\")]");
+            streamWriter.WriteLine("\t\tpublic async Task<HttpResponseMessage> UpdateAsync([FromBody]" + className + " Entity)");
+            streamWriter.WriteLine("\t\t{");
+            streamWriter.WriteLine("\t\t\ttry");
+            streamWriter.WriteLine("\t\t\t{");
+            streamWriter.WriteLine("\t\t\t\tbool newid = await Repo.UpdateAsync(Entity, Entity.Id);");
+            streamWriter.WriteLine("\t\t\t\tvar result = Request.CreateResponse<bool>(HttpStatusCode.OK, newid);");
+            streamWriter.WriteLine("\t\t\t\tresult.Headers.Add(\"Message\", \"Record updated Successfully\");");
+            streamWriter.WriteLine("\t\t\t\treturn result;");
+            streamWriter.WriteLine("\t\t\t}");
+            streamWriter.WriteLine("\t\t\tcatch (Exception ex)");
+            streamWriter.WriteLine("\t\t\t{");
+            streamWriter.WriteLine("\t\t\t\treturn Request.CreateErrorResponse(HttpStatusCode.InternalServerError, new Exception(\"Custome message here at update\", ex));");
+            streamWriter.WriteLine("\t\t\t}");
+            streamWriter.WriteLine("\t\t\t}");
+
+            streamWriter.WriteLine("\t\t[HttpPost, HttpGet]");
+            streamWriter.WriteLine("\t\t[Route(\"DeleteAsync\")]");
+            streamWriter.WriteLine("\t\tpublic async Task<HttpResponseMessage> DeleteAsync(int id)");
+            streamWriter.WriteLine("\t\t{");
+            streamWriter.WriteLine("\t\t\ttry");
+            streamWriter.WriteLine("\t\t\t{");
+            streamWriter.WriteLine("\t\t\t\tbool newid = await Repo.RemoveAsync(id);");
+            streamWriter.WriteLine("\t\t\t\tif (newid)");
+            streamWriter.WriteLine("\t\t\t\t{");
+            streamWriter.WriteLine("\t\t\t\tvar result = Request.CreateResponse<bool>(HttpStatusCode.OK, newid);");
+            streamWriter.WriteLine("\t\t\t\tresult.Headers.Add(\"Message", "Record updated Successfully\");");
+            streamWriter.WriteLine("\t\t\t\treturn result;");
+            streamWriter.WriteLine("\t\t\t\t}");
+            streamWriter.WriteLine("\t\t\t\telse");
+            streamWriter.WriteLine("\t\t\t\t{");
+            streamWriter.WriteLine("\t\t\t\t     return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, new Exception(\"Record Not found for id:-\" + id.ToString()));") ;
+            streamWriter.WriteLine("\t\t\t\t}");
+            streamWriter.WriteLine("\t\t\t\t}");
+            streamWriter.WriteLine("\t\t\tcatch (Exception ex)");
+            streamWriter.WriteLine("\t\t\t{");
+            streamWriter.WriteLine("\t\t\treturn Request.CreateErrorResponse(HttpStatusCode.InternalServerError, new Exception(\"Custome message here at update\", ex));");
+            streamWriter.WriteLine("\t\t\t}");
+            streamWriter.WriteLine("\t\t\t}");
+
+            streamWriter.WriteLine("\t\t [HttpPost, HttpGet]");
+            streamWriter.WriteLine("\t\t[Route(\"SaveMultiAsync\")]");
+            streamWriter.WriteLine("\t\t public async Task<IHttpActionResult> SaveMultiAsync([FromBody]List<" + className + "> Entity)");
+            streamWriter.WriteLine("\t\t{");
+            streamWriter.WriteLine("\t\t\t try");
+            streamWriter.WriteLine("\t\t\t   {");
+            streamWriter.WriteLine("\t\t\t      int newid = await Repo.AddAsync(Entity);");
+            streamWriter.WriteLine("\t\t\t      return Ok(newid);");
+            streamWriter.WriteLine("\t\t\t   }");
+            streamWriter.WriteLine("\t\t\t  catch (Exception ex)");
+            streamWriter.WriteLine("\t\t\t {");
+            streamWriter.WriteLine("\t\t\t     return InternalServerError(new Exception(\"Custome message here at Save all\", ex));");
+            streamWriter.WriteLine("\t\t\t   }");
+            streamWriter.WriteLine("\t\t\t}");
+
+
+            // Append the method footer
+            streamWriter.WriteLine("\t\t");
+            streamWriter.WriteLine("}");
+            streamWriter.WriteLine("}");
         }
 
     }
