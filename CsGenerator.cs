@@ -87,12 +87,12 @@ namespace DataTierGenerator
 				Directory.CreateDirectory(sharpCoreDirectory);
 			}
 
-			Utility.WriteResourceToFile("DataTierGenerator.Resources.SharpCore.SharpCore.Data.dll", Path.Combine(sharpCoreDirectory, "SharpCore.Data.dll"));
-			Utility.WriteResourceToFile("DataTierGenerator.Resources.SharpCore.SharpCore.Data.pdb", Path.Combine(sharpCoreDirectory, "SharpCore.Data.pdb"));
-			Utility.WriteResourceToFile("DataTierGenerator.Resources.SharpCore.SharpCore.Extensions.dll", Path.Combine(sharpCoreDirectory, "SharpCore.Extensions.dll"));
-			Utility.WriteResourceToFile("DataTierGenerator.Resources.SharpCore.SharpCore.Extensions.pdb", Path.Combine(sharpCoreDirectory, "SharpCore.Extensions.pdb"));
-			Utility.WriteResourceToFile("DataTierGenerator.Resources.SharpCore.SharpCore.Utilities.dll", Path.Combine(sharpCoreDirectory, "SharpCore.Utilities.dll"));
-			Utility.WriteResourceToFile("DataTierGenerator.Resources.SharpCore.SharpCore.Utilities.pdb", Path.Combine(sharpCoreDirectory, "SharpCore.Utilities.pdb"));
+			//Utility.WriteResourceToFile("DataTierGenerator.Resources.SharpCore.SharpCore.Data.dll", Path.Combine(sharpCoreDirectory, "SharpCore.Data.dll"));
+			//Utility.WriteResourceToFile("DataTierGenerator.Resources.SharpCore.SharpCore.Data.pdb", Path.Combine(sharpCoreDirectory, "SharpCore.Data.pdb"));
+			//Utility.WriteResourceToFile("DataTierGenerator.Resources.SharpCore.SharpCore.Extensions.dll", Path.Combine(sharpCoreDirectory, "SharpCore.Extensions.dll"));
+			//Utility.WriteResourceToFile("DataTierGenerator.Resources.SharpCore.SharpCore.Extensions.pdb", Path.Combine(sharpCoreDirectory, "SharpCore.Extensions.pdb"));
+			//Utility.WriteResourceToFile("DataTierGenerator.Resources.SharpCore.SharpCore.Utilities.dll", Path.Combine(sharpCoreDirectory, "SharpCore.Utilities.dll"));
+			//Utility.WriteResourceToFile("DataTierGenerator.Resources.SharpCore.SharpCore.Utilities.pdb", Path.Combine(sharpCoreDirectory, "SharpCore.Utilities.pdb"));
 		}
 
 		/// <summary>
@@ -218,7 +218,8 @@ namespace DataTierGenerator
 			}
 		}
 
-    
+
+
 
         /// <summary>
         /// Creates a C# data access class for all of the table's stored procedures.
@@ -1000,8 +1001,6 @@ namespace DataTierGenerator
 
             streamWriter.WriteLine("\tonSubmit(myform, event, btn) {");
             streamWriter.WriteLine("\t\tthis.obj.Id = myform.value.Id");
-
-            streamWriter.WriteLine("\t\t\t " + className + " obj" + variableName + " = new " + className + "();  ");
             // Append the parameter declarations
             for (int i = 0; i < table.Columns.Count; i++)
             {
@@ -1041,12 +1040,331 @@ namespace DataTierGenerator
             streamWriter.WriteLine("\t\t}");
             streamWriter.WriteLine("\t\t}");
 
+            streamWriter.WriteLine("\tSaveConfirm() {");
+            streamWriter.WriteLine("\t\tif (this.myform.valid)");
+            streamWriter.WriteLine("\t\t{");
+            streamWriter.WriteLine("\t\t\tthis.Save(this.obj);");
+            streamWriter.WriteLine("\t\t\tconsole.log(\"Saving\", this.obj);");
+            streamWriter.WriteLine("\t\t}");
+            streamWriter.WriteLine("\t\telse");
+            streamWriter.WriteLine("\t\t{");
+            streamWriter.WriteLine("\t\t\tObject.keys(this.myform.controls).forEach(field => { ");
+            streamWriter.WriteLine("\t\t\tconsole.log('form errors', field);");
+            streamWriter.WriteLine("\t\t\tconst control = this.myform.get(field);");
+            streamWriter.WriteLine("\t\t\tcontrol.markAsTouched({ onlySelf: true });");
+            streamWriter.WriteLine("\t\t});");
+            streamWriter.WriteLine("\t}");
+            streamWriter.WriteLine("\t}");
+
+            streamWriter.WriteLine("\tSaveCancel() {");
+            streamWriter.WriteLine("\t\tconsole.log(\"User try to Insert. but cancelled\");");
+            streamWriter.WriteLine("\t            }");
+
+
+
+            streamWriter.WriteLine("\tSave(item: "+ className + ") {");
+            streamWriter.WriteLine("\tconsole.log(\"Save Confirmed!\", this.myform.valid);");
+            streamWriter.WriteLine("\t\t   this._http.post(this.gloconfig.GetConnection(\""+ className + "\", \"SaveAsync\"), item)");
+            streamWriter.WriteLine("\t\t\t  .subscribe(");
+            streamWriter.WriteLine("\t\t\tdata => {");
+            streamWriter.WriteLine("\t\t\tconsole.log(data)");
+            streamWriter.WriteLine("\t\t\tthis.showSuccess(\"Record Inserted SuccessFully!\");");
+            streamWriter.WriteLine("\t\t},");
+            streamWriter.WriteLine("\t\t\terr => {");
+            streamWriter.WriteLine("\t\t\tthis.showError(\"Some Error occured while transaction! Record not Inserted!\");");
+            streamWriter.WriteLine("\t\t},");
+            streamWriter.WriteLine("\t\t() => {");
+            streamWriter.WriteLine("\t\t\tconsole.log(\"Finish\")");
+            streamWriter.WriteLine("\t\t\tthis.Filter();");
+            streamWriter.WriteLine("\t\t\tthis.switchData();");
+            streamWriter.WriteLine("\t\t})");
+            streamWriter.WriteLine("\t}");
+
+
+            streamWriter.WriteLine("\tUpdateConfirm() {");
+            streamWriter.WriteLine("\t\tif (this.myform.valid)");
+            streamWriter.WriteLine("\t\t{");
+            streamWriter.WriteLine("\t\tthis.Update(this.obj);");
+            streamWriter.WriteLine("\t\tconsole.log(\"Saving   \", this.obj);");
+            streamWriter.WriteLine("\t\tthis.switchData();");
+            streamWriter.WriteLine("\t\t}");
+            streamWriter.WriteLine("\t\telse");
+            streamWriter.WriteLine("\t\t{");
+            streamWriter.WriteLine("\t\tObject.keys(this.myform.controls).forEach(field => {");
+            streamWriter.WriteLine("\t\tconsole.log('form errors', field);");
+            streamWriter.WriteLine("\t\tconst control = this.myform.get(field);");
+            streamWriter.WriteLine("\t\tcontrol.markAsTouched({ onlySelf: true });");
+            streamWriter.WriteLine("\t\t});");
+            streamWriter.WriteLine("\t}");
+            streamWriter.WriteLine("\t}");
+            streamWriter.WriteLine("\tUpdateCancel()");
+            streamWriter.WriteLine("\t\t{");
+            streamWriter.WriteLine("\t\tconsole.log(\"User try to update. but cancelled\");");
+            streamWriter.WriteLine("\t\t}");
+            streamWriter.WriteLine("\t\tUpdate(item: "+ className + ")");
+            streamWriter.WriteLine("\t\t{");
+            streamWriter.WriteLine("\t\tthis._http.post(this.gloconfig.GetConnection("+className+", \"UpdateAsync\"), item)");
+            streamWriter.WriteLine("\t\t.subscribe(");
+            streamWriter.WriteLine("\t\tdata => {");
+            streamWriter.WriteLine("\t\tconsole.log(data)");
+            streamWriter.WriteLine("\t\tif (data === true)");
+            streamWriter.WriteLine("\t\t{");
+            streamWriter.WriteLine("\t\tthis.showSuccess(\"Record Updated SuccessFully!\");");
+            streamWriter.WriteLine("\t\t}");
+            streamWriter.WriteLine("\t\t},");
+            streamWriter.WriteLine("\t\terr => {");
+            streamWriter.WriteLine("\t\tthis.showError(\"Some Error occured while transaction! Record not Updated!\");");
+            streamWriter.WriteLine("\t\tconsole.log(err)");
+            streamWriter.WriteLine("\t\t},");
+            streamWriter.WriteLine("\t\t() => {");
+            streamWriter.WriteLine("\t\tconsole.log(\"Finish\")");
+            streamWriter.WriteLine("\t\tthis.Filter();");
+            streamWriter.WriteLine("\t\tthis.switchData();");
+            streamWriter.WriteLine("\t\t});");
+            streamWriter.WriteLine("\t\t}");
+
+
+            streamWriter.WriteLine("\t\tdeleteConfirm(item: FuelType) {");
+            streamWriter.WriteLine("\t\tconsole.log(\"Deleting:-this.selectedItem  \" + item.Id)");
+            streamWriter.WriteLine("\t\tthis.Delete(item.Id);");
+            streamWriter.WriteLine("\t\t}");
+            streamWriter.WriteLine("\t\tdeleteCancel() {");
+            streamWriter.WriteLine("\t\tconsole.log(\"User try to Delete. but cancelled\");");
+            streamWriter.WriteLine("\t\t}");
+            streamWriter.WriteLine("\t\t");
+            streamWriter.WriteLine("\t\tDelete(id: number) {");
+            streamWriter.WriteLine("\t\tthis._http.post(this.gloconfig.GetConnection(\""+ className + "\", \"DeleteAsync\") + `?id =${ id}`, id)");
+            streamWriter.WriteLine("\t\t.subscribe(");
+            streamWriter.WriteLine("\t\tdata => {");
+            streamWriter.WriteLine("\t\tconsole.log(data)");
+            streamWriter.WriteLine("\t\tif (data === true)");
+            streamWriter.WriteLine("\t\t{");
+            streamWriter.WriteLine("\t\tthis.showSuccess(\"Record Deleted SuccessFully!\");");
+            streamWriter.WriteLine("\t\t}");
+            streamWriter.WriteLine("\t\t},");
+            streamWriter.WriteLine("\t\terr => {");
+            streamWriter.WriteLine("\t\tthis.showError(\"Some Error occured while transaction! Record not deleted!\");");
+            streamWriter.WriteLine("\t\tconsole.log(err)");
+            streamWriter.WriteLine("\t\t},");
+            streamWriter.WriteLine("\t\t() => {");
+            streamWriter.WriteLine("\t\tconsole.log(\"Finish\")");
+            streamWriter.WriteLine("\t\tthis.Filter();");
+            streamWriter.WriteLine("\t\tthis.switchData();");
+            streamWriter.WriteLine("\t\t});");
+            streamWriter.WriteLine("\t\t}");
+
+            }//end of method
+
+
+
+
+      
+
+        internal static void FrontEndAngularHTML(string databaseName, Table table, string targetNamespace, string storedProcedurePrefix, string daoSuffix, string dtoSuffix, string path)
+        {
+            string className = Utility.FormatClassName(table.Name) + daoSuffix;
+            path = Path.Combine(path, "FrontEndAngularHTML");
+
+            using (StreamWriter streamWriter = new StreamWriter(Path.Combine(path, className + ".html")))
+            {
+
+                CreateFrontEndAngularHTML(table, storedProcedurePrefix, dtoSuffix, streamWriter);
+
+            }
+        }
+
+        private static void CreateFrontEndAngularHTML(Table table, string storedProcedurePrefix, string dtoSuffix, StreamWriter streamWriter)
+        {
+            string className = Utility.FormatClassName(table.Name) + dtoSuffix;
+            string variableName = Utility.FormatVariableName(table.Name);
+
+            streamWriter.WriteLine("\t\t<div class=\"row clearfix\">");
+            streamWriter.WriteLine("\t\t<div class=\"card\">");
+            streamWriter.WriteLine("\t\t<div class=\"header bg-teal\">");
+            streamWriter.WriteLine("\t\t<h2>ALL FUEL TYPES(????? ???? )</h2>");
+            streamWriter.WriteLine("\t\t<ul class=\"header-dropdown m-r--5\">");
+            streamWriter.WriteLine("\t\t<li class=\"dropdown\">");
+            streamWriter.WriteLine("\t\t<a href=\"javascript:void(0);\" class=\"dropdown-toggle\" data-toggle=\"dropdown\" role=\"button\" aria-haspopup=\"true\" aria-expanded=\"false\">");
+            streamWriter.WriteLine("\t\t<i class=\"material-icons\">more_vert</i>");
+            streamWriter.WriteLine("\t\t</a>");
+            streamWriter.WriteLine("\t\t<ul class=\"dropdown-menu pull-right\">");
+            streamWriter.WriteLine("\t\t<li>");
+            streamWriter.WriteLine("\t\t<a href=\"javascript:void(0);\" class=\" waves-effect waves-block\">Add Fuel Type</a>");
+            streamWriter.WriteLine("\t\t</li>");
+            streamWriter.WriteLine("\t\t<li>");
+            streamWriter.WriteLine("\t\t<a href=\"javascript:void(0);\" class=\" waves-effect waves-block\">Delete Slected</a>");
+            streamWriter.WriteLine("\t\t</li>");
+            streamWriter.WriteLine("\t\t<li>");
+            streamWriter.WriteLine("\t\t<a href=\"javascript:void(0);\" class=\" waves-effect waves-block\">View Full Details</a>");
+            streamWriter.WriteLine("\t\t</li>");
+            streamWriter.WriteLine("\t\t</ul>");
+            streamWriter.WriteLine("\t\t</li>");
+            streamWriter.WriteLine("\t\t</ul>");
+            streamWriter.WriteLine("\t\t</div>");
+            streamWriter.WriteLine("\t\t");
+            streamWriter.WriteLine("\t\t<div class=\"body\">");
+            streamWriter.WriteLine("\t\t");
+            streamWriter.WriteLine("\t\t");
+            streamWriter.WriteLine("\t\t<div class=\"row clearfix\">");
+            streamWriter.WriteLine("\t\t<div class=\"col-xs-12 col-sm-12 col-md-8 col-lg-8\">");
+            streamWriter.WriteLine("\t\t<div *ngIf=\"issuccess\" class=\"alert alert-success\">");
+            streamWriter.WriteLine("\t\t<strong>Well done!</strong> {{successmsg}}");
+            streamWriter.WriteLine("\t\t</div>");
+            streamWriter.WriteLine("\t\t");
+            streamWriter.WriteLine("\t\t<div *ngIf=\"iserror\" class=\"alert alert-danger\">");
+            streamWriter.WriteLine("\t\t<strong>Ooops!</strong> {{errormsg}}");
+            streamWriter.WriteLine("\t\t</div>");
+            streamWriter.WriteLine("\t\t</div>");
+            streamWriter.WriteLine("\t\t</div>");
+            streamWriter.WriteLine("\t\t");
+            streamWriter.WriteLine("\t\t<div class=\"row clearfix\">");
+            streamWriter.WriteLine("\t\t");
+            streamWriter.WriteLine("\t\t<!-- Task Info -->");
+            streamWriter.WriteLine("\t\t<div class=\"col-xs-12 col-sm-12 col-md-8 col-lg-8\">");
+            streamWriter.WriteLine("\t\t<div class=\"card\">");
+            streamWriter.WriteLine("\t\t<div class=\"body\">");
+            streamWriter.WriteLine("\t\t<div class=\"table-responsive\">");
+            streamWriter.WriteLine("\t\t<table datatable [dtOptions]=\"dtOptions\" [dtTrigger]=\"dtTrigger\" class=\"table table-hover dashboard-task-infos\">");
+            streamWriter.WriteLine("\t\t<thead>");
+            streamWriter.WriteLine("\t\t<tr>");
+            streamWriter.WriteLine("\t\t<th>#</th>");
+            streamWriter.WriteLine("\t\t<th>Fuel Name</th>");
+            streamWriter.WriteLine("\t\t<th>Fuel ShortName</th>");
+            streamWriter.WriteLine("\t\t<th>Unit Price</th>");
+            streamWriter.WriteLine("\t\t<th></th>");
+            streamWriter.WriteLine("\t\t</tr>");
+            streamWriter.WriteLine("\t\t</thead>");
+            streamWriter.WriteLine("\t\t<tbody *ngIf=\"holdvar\">");
+            streamWriter.WriteLine("\t\t<tr *ngFor=\"let item of holdvar;  let i = index\" (click)=\"setClickedRow(item,i)\" [class.active]=\"i == selectedRow\">");
+            streamWriter.WriteLine("\t\t<td>{{item.Id}}</td>");
+            streamWriter.WriteLine("\t\t<td>{{item.FuelFullName}}</td>");
+            streamWriter.WriteLine("\t\t<td>{{item.FuelShortName}}</td>");
+            streamWriter.WriteLine("\t\t<td>");
+            streamWriter.WriteLine("\t\t{{item.UnitPrice}}");
+            streamWriter.WriteLine("\t\t</td>");
+            streamWriter.WriteLine("\t\t<td>");
+            streamWriter.WriteLine("\t\t<a class=\"btn  btn-xs btn-danger waves-effect\" mwlConfirmationPopover [popoverTitle]=\"popoverTitle\" [popoverMessage]=\"popoverMessageDelete\"");
+            streamWriter.WriteLine("\t\t[confirmText]=\"confirmText\" [cancelText]=\"cancelText\" [placement]=\"top\" (confirm)=\"deleteConfirm(item)\"");
+            streamWriter.WriteLine("\t\t(cancel)=\"deleteCancel()\" confirmButtonType=\"danger\" cancelButtonType=\"default\" [appendToBody]=\"true\">");
+            streamWriter.WriteLine("\t\tX </a>");
+            streamWriter.WriteLine("\t\t</td>");
+            streamWriter.WriteLine("\t\t</tr>");
+            streamWriter.WriteLine("\t\t");
+            streamWriter.WriteLine("\t\t");
+            streamWriter.WriteLine("\t\t</tbody>");
+            streamWriter.WriteLine("\t\t</table>");
+            streamWriter.WriteLine("\t\t</div>");
+            streamWriter.WriteLine("\t\t</div>");
+            streamWriter.WriteLine("\t\t</div>");
+            streamWriter.WriteLine("\t\t</div>");
+            streamWriter.WriteLine("\t\t<!-- #END# Task Info -->");
+
+
+
+            streamWriter.WriteLine("\t\t<div class=\"col-xs-12 col-sm-12 col-md-4 col-lg-4\">");
+            streamWriter.WriteLine("\t\t<div class=\"card\">");
+            streamWriter.WriteLine("\t\t<div class=\"body\">");
+            streamWriter.WriteLine("\t\t<form id=\"form_advanced_validation\" [formGroup]=\"myform\" (onSubmit)=\"onSubmit(myform,$event,'Insert')\">");
+            streamWriter.WriteLine("\t\t<input type=\"text\" formControlName=\"Id\" [ngModel]=\"selectedItem.Id\" style=\"display:none\">");
+            streamWriter.WriteLine("\t\t<label for=\"email_address\">Fuel Name (????? ?????? ??)</label>");
+            streamWriter.WriteLine("\t\t<div class=\"form-group\" [ngClass]=\"displayFieldCss('FuelFullName')\">");
+            streamWriter.WriteLine("\t\t<div class=\"form-line\">");
+            streamWriter.WriteLine("\t\t<input type=\"text\" required id=\"email_address\" formControlName=\"FuelFullName\" [ngModel]=\"selectedItem.FuelFullName\" class=\"form-control\"");
+            streamWriter.WriteLine("\t\tplaceholder=\"Fuel Name (????? ?????? ??)\" [ngClass]=\"displayFieldCss('FuelFullName')\">");
+            streamWriter.WriteLine("\t\t</div>");
+            streamWriter.WriteLine("\t\t<div>");
+            streamWriter.WriteLine("\t\t<app-field-error-display [displayError]=\"isFieldValid('FuelFullName')\" errorMsg=\"Fuel Name (????? ?????? ??) required!\">");
+            streamWriter.WriteLine("\t\t</app-field-error-display>");
+            streamWriter.WriteLine("\t\t</div>");
+            streamWriter.WriteLine("\t\t</div>");
+            streamWriter.WriteLine("\t\t<label for=\"email_address\">Fuel Short Name (???? ?? )</label>");
+            streamWriter.WriteLine("\t\t<div class=\"form-group\" [ngClass]=\"displayFieldCss('FuelShortName')\">");
+            streamWriter.WriteLine("\t\t<div class=\"form-line\">");
+            streamWriter.WriteLine("\t\t<input type=\"text\" id=\"email_address\" formControlName=\"FuelShortName\" [ngModel]=\"selectedItem.FuelShortName\" class=\"form-control\"");
+            streamWriter.WriteLine("\t\tplaceholder=\"Fuel Short Name (???? ?? )\">");
+            streamWriter.WriteLine("\t\t</div>");
+            streamWriter.WriteLine("\t\t<app-field-error-display [displayError]=\"isFieldValid('FuelShortName')\" errorMsg=\"This Field Is reqired! 10 Charactors Maximum\">");
+            streamWriter.WriteLine("\t\t</app-field-error-display>");
+            streamWriter.WriteLine("\t\t</div>");
+            streamWriter.WriteLine("\t\t<label for=\"email_address\">Unit Price (????? ???)</label>");
+            streamWriter.WriteLine("\t\t<div class=\"form-group\">");
+            streamWriter.WriteLine("\t\t<div class=\"form-line\">");
+            streamWriter.WriteLine("\t\t<input type=\"number\" id=\"email_address\" formControlName=\"UnitPrice\" [ngModel]=\"selectedItem.UnitPrice\" class=\"form-control\"");
+            streamWriter.WriteLine("\t\tplaceholder=\"Unit Price (????? ???)\">");
+            streamWriter.WriteLine("\t\t</div>");
+            streamWriter.WriteLine("\t\t<app-field-error-display [displayError]=\"isFieldValid('UnitPrice')\" errorMsg=\"This Field Is reqired! Numbers Only!\">");
+            streamWriter.WriteLine("\t\t</app-field-error-display>");
+            streamWriter.WriteLine("\t\t</div>");
+            streamWriter.WriteLine("\t\t<button class=\"btn btn-primary\" mwlConfirmationPopover [popoverTitle]=\"popoverTitle\" [popoverMessage]=\"popoverMessageSave\"");
+            streamWriter.WriteLine("\t\t[confirmText]=\"confirmText\" [cancelText]=\"cancelText\" [placement]=\"bottom\" (confirm)=\"SaveConfirm()\" (cancel)=\"SaveCancel()\"");
+            streamWriter.WriteLine("\t\tconfirmButtonType=\"info\" cancelButtonType=\"default\" (click)=\"onSubmit(myform,$event,'Insert')\" [appendToBody]=\"true\">");
+            streamWriter.WriteLine("\t\tInsert {{ placement }}");
+            streamWriter.WriteLine("\t\t</button>");
+            streamWriter.WriteLine("\t\t<button class=\"btn btn-primary\" mwlConfirmationPopover [popoverTitle]=\"popoverTitle\" [popoverMessage]=\"popoverMessageUpdate\"");
+            streamWriter.WriteLine("\t\t[confirmText]=\"confirmText\" [cancelText]=\"cancelText\" [placement]=\"bottom\" (confirm)=\"UpdateConfirm()\" (cancel)=\"UpdateCancel()\"");
+            streamWriter.WriteLine("\t\tconfirmButtonType=\"warning\" cancelButtonType=\"default\" (click)=\"onSubmit(myform,$event,'Update')\" [appendToBody]=\"true\">");
+            streamWriter.WriteLine("\t\tUpdate {{ placement }}");
+            streamWriter.WriteLine("\t\t</button>");
+            streamWriter.WriteLine("\t\t</form>");
+            streamWriter.WriteLine("\t\t</div>");
+            streamWriter.WriteLine("\t\t</div>");
+            streamWriter.WriteLine("\t\t</div>");
+            streamWriter.WriteLine("\t\t</div>");
+            streamWriter.WriteLine("\t\t</div>");
+            streamWriter.WriteLine("\t\t</div>");
+            streamWriter.WriteLine("\t\t<!-- #END# Browser Usage -->");
+            streamWriter.WriteLine("\t\t</div>");
+
+
+
+            streamWriter.WriteLine("\t\t<div class=\"col-xs-12 col-sm-12 col-md-4 col-lg-4\">");
+            streamWriter.WriteLine("\t\t<div class=\"card\">");
+            streamWriter.WriteLine("\t\t<div class=\"body\">");
+            streamWriter.WriteLine("\t\t<form id=\"form_advanced_validation\" [formGroup]=\"myform\" (onSubmit)=\"onSubmit(myform,$event,'Insert')\">");
+            streamWriter.WriteLine("\t\t<input type=\"text\" formControlName=\"Id\" [ngModel]=\"selectedItem.Id\" style=\"display:none\">");
+            streamWriter.WriteLine("\t\t");
+            streamWriter.WriteLine("\t\t");
+            streamWriter.WriteLine("\t\t");
+
+            for (int i = 0; i < table.Columns.Count; i++)
+            {
+                Column column = table.Columns[i];
+                if (column.IsIdentity == false && column.IsRowGuidCol == false)
+                {
+                    streamWriter.WriteLine("\t\t<label for=\""+ column.Name.Trim() + "\">"+ column.Name.Trim() + " (????? ?????? ??)</label>");
+                    streamWriter.WriteLine("\t\t<div class=\"form-group\" [ngClass]=\"displayFieldCss('"+ column.Name.Trim() + "')\">");
+                    streamWriter.WriteLine("\t\t<div class=\"form-line\">");
+                    streamWriter.WriteLine("\t\t<input type=\"text\" required id=\"ID_"+ column.Name.Trim() + "\" formControlName=\""+ column.Name.Trim() + "\" [ngModel]=\"selectedItem."+ column.Name.Trim() + "\" class=\"form-control\"");
+                    streamWriter.WriteLine("\t\tplaceholder=\""+ column.Name.Trim()  + " (????? ?????? ??)\" [ngClass]=\"displayFieldCss('FuelFullName')\">");
+                    streamWriter.WriteLine("\t\t</div>");
+                    streamWriter.WriteLine("\t\t<div>");
+                    streamWriter.WriteLine("\t\t<app-field-error-display [displayError]=\"isFieldValid('"+ column.Name.Trim() + "')\" errorMsg=\""+ column.Name.Trim() + " (????? ?????? ??) required!\">");
+                    streamWriter.WriteLine("\t\t</app-field-error-display>");
+                    streamWriter.WriteLine("\t\t</div>");
+                    streamWriter.WriteLine("\t\t</div>");
+                }
+            }
+
+            streamWriter.WriteLine("\t\t");
+            streamWriter.WriteLine("\t\t");
+            streamWriter.WriteLine("\t\t");
+            streamWriter.WriteLine("\t\t</form>");
+            streamWriter.WriteLine("\t\t</div>");
+            streamWriter.WriteLine("\t\t</div>");
+            streamWriter.WriteLine("\t\t</div>");
+            streamWriter.WriteLine("\t\t</div>");
+            streamWriter.WriteLine("\t\t</div>");
+            streamWriter.WriteLine("\t\t</div>");
+            streamWriter.WriteLine("\t\t<!-- #END# Browser Usage -->");
+            streamWriter.WriteLine("\t\t</div>");
 
 
 
 
 
-        }//end of method
 
+
+
+        }
     }//end of class
 }//end of namespace

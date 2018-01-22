@@ -103,6 +103,8 @@ namespace DataTierGenerator
                     CsGenerator.DapperClasses(databaseName, table, targetNamespace, storedProcedurePrefix, daoSuffix, dtoSuffix, csPath);
                     CsGenerator.WebApimethods(databaseName, table, targetNamespace, storedProcedurePrefix, daoSuffix, dtoSuffix, csPath);
                     CsGenerator.FrontEndAngular(databaseName, table, targetNamespace, storedProcedurePrefix, daoSuffix, dtoSuffix, csPath);
+                    CsGenerator.FrontEndAngularHTML(databaseName, table, targetNamespace, storedProcedurePrefix, daoSuffix, dtoSuffix, csPath);
+
                     table2 = table;
 					count++;
 					TableCounted(null, new CountEventArgs(count));

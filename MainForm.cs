@@ -42,11 +42,23 @@ namespace DataTierGenerator
         private Label projectLabel;
         private TextBox dtoSuffixTextBox;
         private Label dtoSuffixLabel;
+        private TextBox txt_filename;
+        private Label label1;
+        private Button btn_browse;
+        private TextBox txt_prefix;
+        private Label label2;
+        private TextBox txt_sufix;
+        private Label label3;
+        private Button btn_merge;
+        private RichTextBox txt_display;
+        private OpenFileDialog openFileDialog1;
+        private TextBox txt_rep2;
+        private TextBox txt_rep1;
 
-		/// <summary>
-		/// Required designer variable.
-		/// </summary>
-		private System.ComponentModel.Container components = null;
+        /// <summary>
+        /// Required designer variable.
+        /// </summary>
+        private System.ComponentModel.Container components = null;
 		
 		public MainForm()
 	    {
@@ -264,6 +276,18 @@ namespace DataTierGenerator
             this.namespaceTextBox = new System.Windows.Forms.TextBox();
             this.namespaceLabel = new System.Windows.Forms.Label();
             this.progressBar = new System.Windows.Forms.ProgressBar();
+            this.txt_filename = new System.Windows.Forms.TextBox();
+            this.label1 = new System.Windows.Forms.Label();
+            this.btn_browse = new System.Windows.Forms.Button();
+            this.txt_prefix = new System.Windows.Forms.TextBox();
+            this.label2 = new System.Windows.Forms.Label();
+            this.txt_sufix = new System.Windows.Forms.TextBox();
+            this.label3 = new System.Windows.Forms.Label();
+            this.btn_merge = new System.Windows.Forms.Button();
+            this.txt_display = new System.Windows.Forms.RichTextBox();
+            this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
+            this.txt_rep2 = new System.Windows.Forms.TextBox();
+            this.txt_rep1 = new System.Windows.Forms.TextBox();
             this.authenticationGroupBox.SuspendLayout();
             this.sqlGroupBox.SuspendLayout();
             this.csGroupBox.SuspendLayout();
@@ -525,11 +549,117 @@ namespace DataTierGenerator
             this.progressBar.Size = new System.Drawing.Size(462, 23);
             this.progressBar.TabIndex = 11;
             // 
+            // txt_filename
+            // 
+            this.txt_filename.Location = new System.Drawing.Point(657, 15);
+            this.txt_filename.Name = "txt_filename";
+            this.txt_filename.Size = new System.Drawing.Size(278, 20);
+            this.txt_filename.TabIndex = 12;
+            // 
+            // label1
+            // 
+            this.label1.Location = new System.Drawing.Point(597, 17);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(60, 18);
+            this.label1.TabIndex = 13;
+            this.label1.Text = "Database:";
+            // 
+            // btn_browse
+            // 
+            this.btn_browse.FlatStyle = System.Windows.Forms.FlatStyle.System;
+            this.btn_browse.Location = new System.Drawing.Point(941, 11);
+            this.btn_browse.Name = "btn_browse";
+            this.btn_browse.Size = new System.Drawing.Size(72, 24);
+            this.btn_browse.TabIndex = 14;
+            this.btn_browse.Text = "Browse";
+            this.btn_browse.Click += new System.EventHandler(this.btn_browse_Click);
+            // 
+            // txt_prefix
+            // 
+            this.txt_prefix.Location = new System.Drawing.Point(657, 42);
+            this.txt_prefix.Name = "txt_prefix";
+            this.txt_prefix.Size = new System.Drawing.Size(442, 20);
+            this.txt_prefix.TabIndex = 15;
+            this.txt_prefix.Text = "streamWriter.WriteLine(\"\\t\\t";
+            // 
+            // label2
+            // 
+            this.label2.Location = new System.Drawing.Point(597, 44);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(60, 18);
+            this.label2.TabIndex = 16;
+            this.label2.Text = "Prefix";
+            // 
+            // txt_sufix
+            // 
+            this.txt_sufix.Location = new System.Drawing.Point(657, 68);
+            this.txt_sufix.Name = "txt_sufix";
+            this.txt_sufix.Size = new System.Drawing.Size(442, 20);
+            this.txt_sufix.TabIndex = 17;
+            this.txt_sufix.Text = "\");";
+            // 
+            // label3
+            // 
+            this.label3.Location = new System.Drawing.Point(597, 70);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(60, 18);
+            this.label3.TabIndex = 18;
+            this.label3.Text = "Sufix";
+            // 
+            // btn_merge
+            // 
+            this.btn_merge.FlatStyle = System.Windows.Forms.FlatStyle.System;
+            this.btn_merge.Location = new System.Drawing.Point(1027, 96);
+            this.btn_merge.Name = "btn_merge";
+            this.btn_merge.Size = new System.Drawing.Size(72, 24);
+            this.btn_merge.TabIndex = 19;
+            this.btn_merge.Text = "Merge";
+            this.btn_merge.Click += new System.EventHandler(this.btn_merge_Click);
+            // 
+            // txt_display
+            // 
+            this.txt_display.Location = new System.Drawing.Point(600, 130);
+            this.txt_display.Name = "txt_display";
+            this.txt_display.Size = new System.Drawing.Size(499, 312);
+            this.txt_display.TabIndex = 20;
+            this.txt_display.Text = "";
+            // 
+            // openFileDialog1
+            // 
+            this.openFileDialog1.FileName = "openFileDialog1";
+            // 
+            // txt_rep2
+            // 
+            this.txt_rep2.Location = new System.Drawing.Point(695, 96);
+            this.txt_rep2.Name = "txt_rep2";
+            this.txt_rep2.Size = new System.Drawing.Size(44, 20);
+            this.txt_rep2.TabIndex = 21;
+            this.txt_rep2.Text = "\\\"";
+            // 
+            // txt_rep1
+            // 
+            this.txt_rep1.Location = new System.Drawing.Point(645, 96);
+            this.txt_rep1.Name = "txt_rep1";
+            this.txt_rep1.Size = new System.Drawing.Size(44, 20);
+            this.txt_rep1.TabIndex = 21;
+            this.txt_rep1.Text = "\"";
+            // 
             // MainForm
             // 
             this.AcceptButton = this.generateButton;
             this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
-            this.ClientSize = new System.Drawing.Size(564, 307);
+            this.ClientSize = new System.Drawing.Size(1126, 467);
+            this.Controls.Add(this.txt_rep1);
+            this.Controls.Add(this.txt_rep2);
+            this.Controls.Add(this.txt_display);
+            this.Controls.Add(this.btn_merge);
+            this.Controls.Add(this.txt_sufix);
+            this.Controls.Add(this.label3);
+            this.Controls.Add(this.txt_prefix);
+            this.Controls.Add(this.label2);
+            this.Controls.Add(this.btn_browse);
+            this.Controls.Add(this.txt_filename);
+            this.Controls.Add(this.label1);
             this.Controls.Add(this.progressBar);
             this.Controls.Add(this.csGroupBox);
             this.Controls.Add(this.sqlGroupBox);
@@ -618,5 +748,30 @@ namespace DataTierGenerator
 	    {
 			progressBar.Value = e.Count;
 		}
-	}
+
+        private void btn_browse_Click(object sender, EventArgs e)
+        {
+            if (openFileDialog1.ShowDialog() == DialogResult.OK) {
+                txt_filename.Text = openFileDialog1.FileName;
+            }
+        }
+
+        private void btn_merge_Click(object sender, EventArgs e)
+        {
+            if (File.Exists(txt_filename.Text.Trim()))
+            {
+                StreamReader sr = new StreamReader(txt_filename.Text.Trim());
+                string line="";
+                while ((line = sr.ReadLine()) != null) {
+                    
+                    string linemodified = line.Trim().Replace(txt_rep1.Text.Trim() , txt_rep2.Text.Trim());
+                    txt_display.AppendText(txt_prefix.Text.Trim() + linemodified.Trim() + txt_sufix.Text.Trim() + Environment.NewLine);
+                }
+
+            }
+            else {
+                MessageBox.Show("File DOes Not exists.");
+            }
+        }
+    }
 }
