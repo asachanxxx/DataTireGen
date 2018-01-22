@@ -218,7 +218,8 @@ namespace DataTierGenerator
 			}
 		}
 
-      
+    
+
         /// <summary>
         /// Creates a C# data access class for all of the table's stored procedures.
         /// </summary>
@@ -642,6 +643,8 @@ namespace DataTierGenerator
             streamWriter.WriteLine();
         }
 
+
+
         internal static void WebApimethods(string databaseName, Table table, string targetNamespace, string storedProcedurePrefix, string daoSuffix, string dtoSuffix, string path)
         {
             //WebAPI
@@ -820,5 +823,230 @@ namespace DataTierGenerator
             streamWriter.WriteLine("}");
         }
 
-    }
-}
+
+
+        internal static void FrontEndAngular(string databaseName, Table table, string targetNamespace, string storedProcedurePrefix, string daoSuffix, string dtoSuffix, string path)
+        {
+
+            string className = Utility.FormatClassName(table.Name) + daoSuffix;
+            path = Path.Combine(path, "FrontEndAngular");
+
+            using (StreamWriter streamWriter = new StreamWriter(Path.Combine(path, className + ".ts")))
+            {
+
+                CreateFrontEndAngularTS(table, storedProcedurePrefix, dtoSuffix, streamWriter);
+
+            }
+        }
+
+        private static void CreateFrontEndAngularTS(Table table, string storedProcedurePrefix, string dtoSuffix, StreamWriter streamWriter)
+        {
+            string className = Utility.FormatClassName(table.Name) + dtoSuffix;
+            string variableName = Utility.FormatVariableName(table.Name);
+
+            streamWriter.WriteLine("// className: " + className + " variableName - " + variableName);
+
+            streamWriter.WriteLine("");
+            streamWriter.WriteLine("\t");
+            streamWriter.WriteLine("\t\t");
+            streamWriter.WriteLine("\t\t\t");
+
+            streamWriter.WriteLine("import { Component, OnInit, ViewChild, AfterViewInit, ViewContainerRef } from '@angular/core';");
+            streamWriter.WriteLine("import { "+ className + " } from '../../model/fuelType.model';");
+            streamWriter.WriteLine("import { HttpClient } from '@angular/common/http';");
+            streamWriter.WriteLine("import { Subject } from 'rxjs/Subject';");
+            streamWriter.WriteLine("import { DataTableDirective } from 'angular-datatables';");
+            streamWriter.WriteLine("import 'rxjs/add/operator/map';");
+            streamWriter.WriteLine("import { FormGroup, FormControl, Validators, FormBuilder } from '@angular/forms';");
+            streamWriter.WriteLine("import { GlobalConfig } from '../../service/globalconfig.service';");
+            streamWriter.WriteLine("import { HttpHeaders } from '@angular/common/http';");
+
+
+            streamWriter.WriteLine("@Component({");
+            streamWriter.WriteLine("\tselector: 'app-fueltypes',");
+            streamWriter.WriteLine("\ttemplateUrl: './"+ variableName + ".component.html',");
+            streamWriter.WriteLine("\tstyleUrls: ['./" + variableName + ".component.css']");
+            streamWriter.WriteLine("})");
+
+            streamWriter.WriteLine("export class "+ className + "Component implements OnInit, AfterViewInit {");
+            streamWriter.WriteLine("\t//Used for Data table object");
+            streamWriter.WriteLine("\t@ViewChild(DataTableDirective)");
+            streamWriter.WriteLine("\tdtElement: DataTableDirective;");
+            streamWriter.WriteLine("\tdtOptions: DataTables.Settings = {};");
+            streamWriter.WriteLine("\tdtTrigger: Subject<any> = new Subject();");
+            streamWriter.WriteLine("\tdtInstance: DataTables.Api;");
+            streamWriter.WriteLine("\t//Confirm and popover messages for insert update delete");
+            streamWriter.WriteLine("\tpopoverTitle: string = this.gloconfig.GetmessageCaption;");
+            streamWriter.WriteLine("\tpopoverMessageSave: string = this.gloconfig.GetconfirmInsert;");
+            streamWriter.WriteLine("\tpopoverMessageUpdate: string = this.gloconfig.GetconfirmModify;");
+            streamWriter.WriteLine("\tpopoverMessageDelete: string = this.gloconfig.GetconfirmDelete;");
+            streamWriter.WriteLine("\tconfirmText: string = 'Yes <i class=\"glyphicon glyphicon-ok\"></i>';");
+            streamWriter.WriteLine("\tcancelText: string = 'No <i class=\"glyphicon glyphicon-remove\"></i>';");
+
+            streamWriter.WriteLine("private customHeaders: HttpHeaders = this.setCredentialsHeader();");
+            streamWriter.WriteLine("\tmyform: FormGroup;");
+            streamWriter.WriteLine("\tselectedRow: any;");
+            streamWriter.WriteLine("\tselectedItem:FuelType;");
+            streamWriter.WriteLine("\tholdvar: FuelType[] = [];");
+            streamWriter.WriteLine("\tfilterholder: FuelType[];");
+            streamWriter.WriteLine("\tobj: FuelType = new FuelType();");
+            streamWriter.WriteLine("\t//Variables for error and sucess messages");
+            streamWriter.WriteLine("\tissuccess = false;");
+            streamWriter.WriteLine("\tiserror = false;");
+            streamWriter.WriteLine("\tsuccessmsg = \"Inisizlising success message\";");
+            streamWriter.WriteLine("\terrormsg = \"Inisizlising success message\";");
+
+            streamWriter.WriteLine("\tconstructor(private _http: HttpClient, private gloconfig: GlobalConfig,");
+            streamWriter.WriteLine("\tprivate formBuilder: FormBuilder) {}");
+
+            streamWriter.WriteLine(" showSuccess(message: string) {");
+            streamWriter.WriteLine("\tthis.issuccess = true;");
+            streamWriter.WriteLine("\tthis.iserror = false;");
+            streamWriter.WriteLine("\tthis.successmsg = message;");
+            streamWriter.WriteLine("\tsetTimeout(() => {");
+            streamWriter.WriteLine("\t\tthis.issuccess = false;");
+            streamWriter.WriteLine("\t\tthis.iserror = false;");
+            streamWriter.WriteLine("\t}, 5000);");
+            streamWriter.WriteLine("\tthis.selectedItem = new FuelType();");
+            streamWriter.WriteLine("}");
+            streamWriter.WriteLine("showError(message: string) {");
+            streamWriter.WriteLine("\t\tthis.errormsg = message");
+            streamWriter.WriteLine("\t\tthis.issuccess = false;");
+            streamWriter.WriteLine("\t\tthis.iserror = true;");
+            streamWriter.WriteLine("\t\tsetTimeout(() => {");
+            streamWriter.WriteLine("\t\t\tthis.issuccess = false;");
+            streamWriter.WriteLine("\t\t\tthis.iserror = false;");
+            streamWriter.WriteLine("\t\t                }, 5000);");
+
+            streamWriter.WriteLine("//Validation"); 
+            streamWriter.WriteLine("\tisFieldValid(field: string) {");
+            streamWriter.WriteLine("\t\treturn !this.myform.get(field).valid && this.myform.get(field).touched;");
+            streamWriter.WriteLine("\t}");
+            streamWriter.WriteLine("\tdisplayFieldCss(field: string) {");
+            streamWriter.WriteLine("\t\treturn {");
+            streamWriter.WriteLine("\t'has-error': this.isFieldValid(field),");
+            streamWriter.WriteLine("\t'has-feedback': this.isFieldValid(field)");
+            streamWriter.WriteLine("\t};");
+            streamWriter.WriteLine("\t}");
+
+
+            streamWriter.WriteLine("\tngOnInit() {");
+            streamWriter.WriteLine("\tthis.dtOptions = {");
+            streamWriter.WriteLine("\t\tpagingType: 'full_numbers',");
+            streamWriter.WriteLine("\t\tpageLength: 10,");
+            streamWriter.WriteLine("\t};");
+            streamWriter.WriteLine("\tthis.myform = this.formBuilder.group({");
+            streamWriter.WriteLine("\t\tId: [null],");
+            streamWriter.WriteLine("\t\tFuelFullName: [null, Validators.required],");
+            streamWriter.WriteLine("\t\tFuelShortName: [null, [Validators.required, Validators.maxLength(10)]],");
+            streamWriter.WriteLine("\t\tUnitPrice: [null, Validators.required],");
+            streamWriter.WriteLine("\t});");
+            streamWriter.WriteLine("\tthis.Filter();");
+            streamWriter.WriteLine("\tthis.switchData();");
+            streamWriter.WriteLine("\tthis.showSuccess(\"Program Inisialized\");");
+
+
+            streamWriter.WriteLine("\tngAfterViewInit(): void {");
+            streamWriter.WriteLine("\t\tconsole.log(\"ngAfterViewInit\", this.holdvar);");
+            streamWriter.WriteLine("\t\tthis.dtTrigger.next();");
+            streamWriter.WriteLine("\t}");
+
+            streamWriter.WriteLine("\tsetCredentialsHeader() {");
+            streamWriter.WriteLine("\t\tlet headers = new HttpHeaders();");
+            streamWriter.WriteLine("\t\tlet credentials = window.localStorage.getItem('credentials2');");
+            streamWriter.WriteLine("\t\tlet token = \"RcF2kW7g6KKscCTR3 -YoMJjzhAPxCXufe3fy2NXiIlm8NGtUqbrvzQtCcrIByxNqmav_vFacZmhAX22A8MRnl6JCy6ATUDeAz-dE_H6pHgQzGbYK0pbKv06H3a-QGiYsM-a5ASlLEbe1lRD4cGVmkpVBoIdIj6Qw9H9QvZPaZP8o2bnVCxD8ag8ceinYKPYxHKKdO8JsPxjuMk_T1Vlm39vPGYDJC5_45xgF4jcsqxoNLy95bHUhSzvZgsf2jMqG-dwutfcZOAxCtfZ-1FYRvpjre3TWvqySdx59GW5WKpGqbRjZJuvoBLMDQu20fj4pxwzRXYTOvj12GfJ_Vgj9Rz_bCKHkChaBxRm2--UF6CG3okVTSaqPcyqJ0q-PqIDUqa3E23CWOm9v20XzhiLjiUk6gz8kFgomu1zHQibQXa9mLw_N9ATdYp1xXfqCkd7SukmeCmTT-0r_sQJYHFXxhUUUuqeCzXmEf3RpkX5xytjFExOrLbgpN6vIu772FMWO\"");
+            streamWriter.WriteLine("\t\theaders.append('Authorization', 'Bearer ' + token);");
+            streamWriter.WriteLine("\t\treturn headers;");
+            streamWriter.WriteLine("\t}");
+
+
+            streamWriter.WriteLine("\tFilter() {");
+            streamWriter.WriteLine("\t\tlet hed: HttpHeaders = new HttpHeaders();");
+            streamWriter.WriteLine("\t\tthis._http.get<"+ className + "[]>(this.gloconfig.GetConnection(\""+className+"\", \"GetAll\"), { headers: this.customHeaders })");
+            streamWriter.WriteLine("\t\t.subscribe(");
+            streamWriter.WriteLine("\t\tdata => {");
+            streamWriter.WriteLine("\t\tthis.filterholder = data;");
+            streamWriter.WriteLine("\t\t},");
+            streamWriter.WriteLine("\t\terr => {");
+            streamWriter.WriteLine("\t\tconsole.log(err)");
+            streamWriter.WriteLine("\t\t},");
+            streamWriter.WriteLine("\t\t() => {");
+            streamWriter.WriteLine("\t\tthis.holdvar = this.filterholder;");
+            streamWriter.WriteLine("\t\tthis.switchData();");
+            streamWriter.WriteLine("\t\tconsole.log(\"Finish\", this.holdvar)");
+            streamWriter.WriteLine("\t\t});");
+            streamWriter.WriteLine("\t}");
+
+            streamWriter.WriteLine("\tswitchData(): void {");
+            streamWriter.WriteLine("\t//in first call on OnInit this.dtElement.dtInstance is not construct and check it for undefinned");
+            streamWriter.WriteLine("\t\tif (this.dtElement.dtInstance !== undefined)");
+            streamWriter.WriteLine("\t\t{");
+            streamWriter.WriteLine("\t\t\tthis.dtElement.dtInstance.then((dtInstance: DataTables.Api) => {");
+            streamWriter.WriteLine("\t\t\t// Destroy the table first");
+            streamWriter.WriteLine("\t\t\tdtInstance.destroy();");
+            streamWriter.WriteLine("\t\t\t// Switch");
+            streamWriter.WriteLine("\t\t\tthis.holdvar = this.filterholder; //this.data[id];");
+            streamWriter.WriteLine("\t\t\t// Call the dtTrigger to rerender again");
+            streamWriter.WriteLine("\t\t\tthis.dtTrigger.next();");
+            streamWriter.WriteLine("\t\t});");
+            streamWriter.WriteLine("\t\t}");
+            streamWriter.WriteLine("\t}");
+
+
+            streamWriter.WriteLine("\tsetClickedRow(item: any, i: any) {");
+                streamWriter.WriteLine("\t\tthis.selectedRow = i;");
+            streamWriter.WriteLine("\t\tthis.selectedItem = item;");
+            streamWriter.WriteLine("\t}");
+
+            streamWriter.WriteLine("\tonSubmit(myform, event, btn) {");
+            streamWriter.WriteLine("\t\tthis.obj.Id = myform.value.Id");
+
+            streamWriter.WriteLine("\t\t\t " + className + " obj" + variableName + " = new " + className + "();  ");
+            // Append the parameter declarations
+            for (int i = 0; i < table.Columns.Count; i++)
+            {
+                Column column = table.Columns[i];
+                if (column.IsIdentity == false && column.IsRowGuidCol == false)
+                {
+
+                    switch (column.Name.Trim()) {
+                        case "CreatedDate":
+                            streamWriter.WriteLine("\t\tthis.obj.CreatedDate = new Date();");
+                            break;
+                        case "ModifiedDate":
+                            streamWriter.WriteLine("\t\tthis.obj.ModifiedDate = new Date();");
+                            break;
+                        case "CreatedUser":
+                            streamWriter.WriteLine("\t\tthis.obj.CreatedUser = this.gloconfig.GetlogedInUserID;");
+                            break;
+                        case "ModifiedUser":
+                            streamWriter.WriteLine("\t\tthis.obj.ModifiedUser = this.gloconfig.GetlogedInUserID");
+                            break;
+                        case "DataTransfer":
+                            streamWriter.WriteLine("\t\tthis.obj.DataTransfer = 1;");
+                            break;
+                        default:
+                            streamWriter.WriteLine("\t\tthis.obj." + column.Name.Trim() + " = myform.value." + column.Name.Trim() + "");
+                            break;
+                    }
+                }
+            }
+            streamWriter.WriteLine("\t\tswitch (btn)");
+            streamWriter.WriteLine("\t\t{");
+            streamWriter.WriteLine("\t\tcase 'Insert':");
+            streamWriter.WriteLine("\t\tconsole.log(\"On Submit - case insert : \", btn)");
+            streamWriter.WriteLine("\t\tthis.obj.Id = -1;");
+            streamWriter.WriteLine("\t\tbreak;");
+            streamWriter.WriteLine("\t\tdefault: break;");
+            streamWriter.WriteLine("\t\t}");
+            streamWriter.WriteLine("\t\t}");
+
+
+
+
+
+
+        }//end of method
+
+    }//end of class
+}//end of namespace
