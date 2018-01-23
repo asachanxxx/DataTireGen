@@ -896,10 +896,11 @@ namespace DataTierGenerator
             streamWriter.WriteLine("\tiserror = false;");
             streamWriter.WriteLine("\tsuccessmsg = \"Inisizlising success message\";");
             streamWriter.WriteLine("\terrormsg = \"Inisizlising success message\";");
-
+            streamWriter.WriteLine("\t//************************************************************************** constructor ***************************************");
             streamWriter.WriteLine("\tconstructor(private _http: HttpClient, private gloconfig: GlobalConfig,");
             streamWriter.WriteLine("\tprivate formBuilder: FormBuilder) {}");
 
+            streamWriter.WriteLine("\t//************************************************************************** Messaging MEthods ***************************************");
             streamWriter.WriteLine(" showSuccess(message: string) {");
             streamWriter.WriteLine("\tthis.issuccess = true;");
             streamWriter.WriteLine("\tthis.iserror = false;");
@@ -918,7 +919,9 @@ namespace DataTierGenerator
             streamWriter.WriteLine("\t\t\tthis.issuccess = false;");
             streamWriter.WriteLine("\t\t\tthis.iserror = false;");
             streamWriter.WriteLine("\t\t                }, 5000);");
+            streamWriter.WriteLine("\t}");
 
+            streamWriter.WriteLine("\t//************************************************************************** Validations ***************************************");
             streamWriter.WriteLine("//Validation"); 
             streamWriter.WriteLine("\tisFieldValid(field: string) {");
             streamWriter.WriteLine("\t\treturn !this.myform.get(field).valid && this.myform.get(field).touched;");
@@ -930,7 +933,7 @@ namespace DataTierGenerator
             streamWriter.WriteLine("\t};");
             streamWriter.WriteLine("\t}");
 
-
+            streamWriter.WriteLine("\t//************************************************************************** OnInit ***************************************");
             streamWriter.WriteLine("\tngOnInit() {");
             streamWriter.WriteLine("\tthis.dtOptions = {");
             streamWriter.WriteLine("\t\tpagingType: 'full_numbers',");
@@ -945,13 +948,14 @@ namespace DataTierGenerator
             streamWriter.WriteLine("\tthis.Filter();");
             streamWriter.WriteLine("\tthis.switchData();");
             streamWriter.WriteLine("\tthis.showSuccess(\"Program Inisialized\");");
+            streamWriter.WriteLine("\t}");
 
-
+            streamWriter.WriteLine("\t//************************************************************************** ngAfterViewInit ***************************************");
             streamWriter.WriteLine("\tngAfterViewInit(): void {");
             streamWriter.WriteLine("\t\tconsole.log(\"ngAfterViewInit\", this.holdvar);");
             streamWriter.WriteLine("\t\tthis.dtTrigger.next();");
             streamWriter.WriteLine("\t}");
-
+            streamWriter.WriteLine("\t");
             streamWriter.WriteLine("\tsetCredentialsHeader() {");
             streamWriter.WriteLine("\t\tlet headers = new HttpHeaders();");
             streamWriter.WriteLine("\t\tlet credentials = window.localStorage.getItem('credentials2');");
@@ -960,7 +964,7 @@ namespace DataTierGenerator
             streamWriter.WriteLine("\t\treturn headers;");
             streamWriter.WriteLine("\t}");
 
-
+            streamWriter.WriteLine("\t//************************************************************************** Filter ***************************************");
             streamWriter.WriteLine("\tFilter() {");
             streamWriter.WriteLine("\t\tlet hed: HttpHeaders = new HttpHeaders();");
             streamWriter.WriteLine("\t\tthis._http.get<"+ className + "[]>(this.gloconfig.GetConnection(\""+className+"\", \"GetAll\"), { headers: this.customHeaders })");
@@ -977,7 +981,7 @@ namespace DataTierGenerator
             streamWriter.WriteLine("\t\tconsole.log(\"Finish\", this.holdvar)");
             streamWriter.WriteLine("\t\t});");
             streamWriter.WriteLine("\t}");
-
+            streamWriter.WriteLine("\t//************************************************************************** tswitchData ***************************************");
             streamWriter.WriteLine("\tswitchData(): void {");
             streamWriter.WriteLine("\t//in first call on OnInit this.dtElement.dtInstance is not construct and check it for undefinned");
             streamWriter.WriteLine("\t\tif (this.dtElement.dtInstance !== undefined)");
@@ -992,7 +996,7 @@ namespace DataTierGenerator
             streamWriter.WriteLine("\t\t});");
             streamWriter.WriteLine("\t\t}");
             streamWriter.WriteLine("\t}");
-
+            streamWriter.WriteLine("\t//************************************************************************** setClickedRow ***************************************");
 
             streamWriter.WriteLine("\tsetClickedRow(item: any, i: any) {");
                 streamWriter.WriteLine("\t\tthis.selectedRow = i;");
@@ -1040,6 +1044,8 @@ namespace DataTierGenerator
             streamWriter.WriteLine("\t\t}");
             streamWriter.WriteLine("\t\t}");
 
+            streamWriter.WriteLine("\t//************************************************************************** SAVE CONFIRM ***************************************");
+
             streamWriter.WriteLine("\tSaveConfirm() {");
             streamWriter.WriteLine("\t\tif (this.myform.valid)");
             streamWriter.WriteLine("\t\t{");
@@ -1061,7 +1067,7 @@ namespace DataTierGenerator
             streamWriter.WriteLine("\t            }");
 
 
-
+            streamWriter.WriteLine("\t//************************************************************************** SAVE ***************************************");
             streamWriter.WriteLine("\tSave(item: "+ className + ") {");
             streamWriter.WriteLine("\tconsole.log(\"Save Confirmed!\", this.myform.valid);");
             streamWriter.WriteLine("\t\t   this._http.post(this.gloconfig.GetConnection(\""+ className + "\", \"SaveAsync\"), item)");
@@ -1080,7 +1086,7 @@ namespace DataTierGenerator
             streamWriter.WriteLine("\t\t})");
             streamWriter.WriteLine("\t}");
 
-
+            streamWriter.WriteLine("\t//************************************************************************** UPDATE CONFIRM ***************************************");
             streamWriter.WriteLine("\tUpdateConfirm() {");
             streamWriter.WriteLine("\t\tif (this.myform.valid)");
             streamWriter.WriteLine("\t\t{");
@@ -1097,10 +1103,12 @@ namespace DataTierGenerator
             streamWriter.WriteLine("\t\t});");
             streamWriter.WriteLine("\t}");
             streamWriter.WriteLine("\t}");
+
             streamWriter.WriteLine("\tUpdateCancel()");
             streamWriter.WriteLine("\t\t{");
             streamWriter.WriteLine("\t\tconsole.log(\"User try to update. but cancelled\");");
             streamWriter.WriteLine("\t\t}");
+            streamWriter.WriteLine("\t//************************************************************************** UPDATE ***************************************");
             streamWriter.WriteLine("\t\tUpdate(item: "+ className + ")");
             streamWriter.WriteLine("\t\t{");
             streamWriter.WriteLine("\t\tthis._http.post(this.gloconfig.GetConnection("+className+", \"UpdateAsync\"), item)");
@@ -1123,7 +1131,7 @@ namespace DataTierGenerator
             streamWriter.WriteLine("\t\t});");
             streamWriter.WriteLine("\t\t}");
 
-
+            streamWriter.WriteLine("\t//************************************************************************** DELETE CONFIRM ***************************************");
             streamWriter.WriteLine("\t\tdeleteConfirm(item: FuelType) {");
             streamWriter.WriteLine("\t\tconsole.log(\"Deleting:-this.selectedItem  \" + item.Id)");
             streamWriter.WriteLine("\t\tthis.Delete(item.Id);");
@@ -1153,7 +1161,39 @@ namespace DataTierGenerator
             streamWriter.WriteLine("\t\t});");
             streamWriter.WriteLine("\t\t}");
 
-            }//end of method
+
+
+            //            export class FuelType
+            //        {
+            //            Id:number;
+            //	FuelFullName:string;
+            //	FuelShortName:string;
+            //	UnitPrice:number;
+            //	GroupOfCompanyID:number;
+            //	CreatedUser:number;
+            //	CreatedDate:Date
+            //    ModifiedUser:number;
+            //	ModifiedDate:Date
+            //    DataTransfer:number;
+
+            //}
+
+            streamWriter.WriteLine("\texport class "+ className.Trim());
+            streamWriter.WriteLine("\t{");
+
+            ///////////////////////////////////CLASS FILES //////////////////////////////////////////////
+            for (int i = 0; i < table.Columns.Count; i++)
+            {
+                Column column = table.Columns[i];
+                string tstype =  Utility.GetTSType(column);
+                streamWriter.WriteLine("\t\t\t "+ column.Name + ":" + tstype + ";");
+            }
+            streamWriter.WriteLine("\t}");
+
+
+
+
+    }//end of method
 
 
 

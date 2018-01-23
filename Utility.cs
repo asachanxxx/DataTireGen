@@ -926,10 +926,81 @@ namespace DataTierGenerator
             }
 		}
 
+
         /// <summary>
-        /// Creates a string for a SqlParameter representing the specified column.
+        /// Creates the name of the method to call on a SqlDataReader for the specified column.
         /// </summary>
-        /// <param name="column">Object that stores the information for the column the parameter represents.</param>
-     
-	}
+        /// <param name="column">The column to retrieve data for.</param>
+        /// <returns>The name of the method to call on a SqlDataReader for the specified column.</returns>
+        public static string GetTSType(Column column)
+        {
+            switch (column.Type.ToLower())
+            {
+                case "binary":
+                    return "byte[]";
+                case "bigint":
+                    return "number";
+                case "bit":
+                    return "boolean";
+                case "char":
+                    return "string";
+                case "datetime":
+                    return "Date";
+                case "decimal":
+                    return "number";
+                case "float":
+                    return "number";
+                case "image":
+                    return "byte[]";
+                case "int":
+                    return "number";
+                case "money":
+                    return "number";
+                case "nchar":
+                    return "string";
+                case "ntext":
+                    return "string";
+                case "nvarchar":
+                    return "string";
+                case "numeric":
+                    return "number";
+                case "real":
+                    return "number";
+                case "smalldatetime":
+                    return "Date";
+                case "smallint":
+                    return "number";
+                case "smallmoney":
+                    return "number";
+                case "sql_variant":
+                    return "byte[]";
+                case "sysname":
+                    return "string";
+                case "text":
+                    return "string";
+                case "timestamp":
+                    return "Date";
+                case "tinyint":
+                    return "byte";
+                case "varbinary":
+                    return "byte[]";
+                case "varchar":
+                    return "string";
+                case "uniqueidentifier":
+                    return "Guid";
+                case "xml":
+                    return "string";
+                case "date":
+                    return "Date";
+                case "time":
+                    return "Date";
+                default:  // Unknow data type
+                    return "any";
+            }
+        }
+
+
+
+
+    }
 }
