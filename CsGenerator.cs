@@ -688,7 +688,7 @@ namespace DataTierGenerator
 
             streamWriter.WriteLine("namespace FSMS.UIAspNET.Controllers");
             streamWriter.WriteLine("\t{");
-            streamWriter.WriteLine("\t[EnableCors(origins: \" * \", headers: \"*\", methods: \"*\", exposedHeaders: \"Message,Error\")]");
+            //streamWriter.WriteLine("\t[EnableCors(origins: \" * \", headers: \"*\", methods: \"*\", exposedHeaders: \"Message,Error\")]");
             streamWriter.WriteLine("\t[RoutePrefix(\""+ className + "\")]");
             streamWriter.WriteLine("\tpublic class " + className + "Controller : ApiController");
             streamWriter.WriteLine("\t{");
@@ -950,7 +950,7 @@ namespace DataTierGenerator
                 Column column = table.Columns[i];
                 if (column.IsIdentity == false && column.IsRowGuidCol == false)
                 {
-                    streamWriter.WriteLine("\t\t"+column.Name+": [null],");
+                    streamWriter.WriteLine("\t\t"+column.Name+": [\"\"],");
                 }
             }
             streamWriter.WriteLine("\t});");
@@ -1242,7 +1242,7 @@ namespace DataTierGenerator
             streamWriter.WriteLine("\t\t<div class=\"row clearfix\">");
             streamWriter.WriteLine("\t\t<div class=\"card\">");
             streamWriter.WriteLine("\t\t<div class=\"header bg-teal\">");
-            streamWriter.WriteLine("\t\t<h2>ALL FUEL TYPES(????? ???? )</h2>");
+            streamWriter.WriteLine("\t\t<h2>ALL "+className.Trim()+"</h2>");
             streamWriter.WriteLine("\t\t<ul class=\"header-dropdown m-r--5\">");
             streamWriter.WriteLine("\t\t<li class=\"dropdown\">");
             streamWriter.WriteLine("\t\t<a href=\"javascript:void(0);\" class=\"dropdown-toggle\" data-toggle=\"dropdown\" role=\"button\" aria-haspopup=\"true\" aria-expanded=\"false\">");
@@ -1250,7 +1250,7 @@ namespace DataTierGenerator
             streamWriter.WriteLine("\t\t</a>");
             streamWriter.WriteLine("\t\t<ul class=\"dropdown-menu pull-right\">");
             streamWriter.WriteLine("\t\t<li>");
-            streamWriter.WriteLine("\t\t<a href=\"javascript:void(0);\" class=\" waves-effect waves-block\">Add Fuel Type</a>");
+            streamWriter.WriteLine("\t\t<a href=\"javascript:void(0);\" class=\" waves-effect waves-block\">Add "+ className.Trim() + "</a>");
             streamWriter.WriteLine("\t\t</li>");
             streamWriter.WriteLine("\t\t<li>");
             streamWriter.WriteLine("\t\t<a href=\"javascript:void(0);\" class=\" waves-effect waves-block\">Delete Slected</a>");
@@ -1339,15 +1339,13 @@ namespace DataTierGenerator
                 Column column = table.Columns[i];
                 if (column.IsIdentity == false && column.IsRowGuidCol == false)
                 {
-                    streamWriter.WriteLine("\t\t<label for=\""+ column.Name.Trim() + "\">"+ column.Name.Trim() + " (????? ?????? ??)</label>");
+                    streamWriter.WriteLine("\t\t <div class=\"col-xs-12 col-sm-12 col-md-3 col-lg-3\"> ");
+                    streamWriter.WriteLine("\t\t<label for=\""+ column.Name.Trim() + "\">"+ column.Name.Trim() + "</label>");
                     streamWriter.WriteLine("\t\t<div class=\"form-group\" [ngClass]=\"displayFieldCss('"+ column.Name.Trim() + "')\">");
                     streamWriter.WriteLine("\t\t<div class=\"form-line\">");
-                    streamWriter.WriteLine("\t\t<input type=\"text\" required id=\"ID_"+ column.Name.Trim() + "\" formControlName=\""+ column.Name.Trim() + "\" [ngModel]=\"selectedItem."+ column.Name.Trim() + "\" class=\"form-control\"");
-                    streamWriter.WriteLine("\t\tplaceholder=\""+ column.Name.Trim()  + " (????? ?????? ??)\" [ngClass]=\"displayFieldCss('"+ column.Name.Trim() + "')\">");
+                    streamWriter.WriteLine("\t\t<input type=\"text\" id=\"ID_"+ column.Name.Trim() + "\" formControlName=\""+ column.Name.Trim() + "\" [ngModel]=\"selectedItem."+ column.Name.Trim() + "\" class=\"form-control\"");
+                    streamWriter.WriteLine("\t\tplaceholder=\""+ column.Name.Trim()  + "\" [ngClass]=\"displayFieldCss('"+ column.Name.Trim() + "')\">");
                     streamWriter.WriteLine("\t\t</div>");
-                    streamWriter.WriteLine("\t\t<div>");
-                    streamWriter.WriteLine("\t\t<app-field-error-display [displayError]=\"isFieldValid('"+ column.Name.Trim() + "')\" errorMsg=\""+ column.Name.Trim() + " (????? ?????? ??) required!\">");
-                    streamWriter.WriteLine("\t\t</app-field-error-display>");
                     streamWriter.WriteLine("\t\t</div>");
                     streamWriter.WriteLine("\t\t</div>");
                 }
@@ -1368,6 +1366,8 @@ namespace DataTierGenerator
 
 
 
+            int x = 1;
+            var code = "EMP" + x.ToString("00000");
 
 
 
