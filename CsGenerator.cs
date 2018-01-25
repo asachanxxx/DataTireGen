@@ -1039,7 +1039,18 @@ namespace DataTierGenerator
                             streamWriter.WriteLine("\t\tthis.obj.DataTransfer = 1;");
                             break;
                         default:
-                            streamWriter.WriteLine("\t\tthis.obj." + column.Name.Trim() + " = myform.value." + column.Name.Trim() + "");
+                            streamWriter.WriteLine("\t\tif (myform.value."+ column.Name.Trim() + " === \"\" || myform.value."+ column.Name.Trim() + " === null || myform.value."+ column.Name.Trim() + " === undefined)");
+                            streamWriter.WriteLine("\t\t{");
+                            streamWriter.WriteLine("\t\tthis.obj."+ column.Name.Trim() + " = \" - \"");
+                            streamWriter.WriteLine("\t\t}");
+                            streamWriter.WriteLine("\t\telse");
+                            streamWriter.WriteLine("\t\t{");
+                            streamWriter.WriteLine("\t\tthis.obj."+ column.Name.Trim() + " = myform.value."+ column.Name.Trim() + "");
+                            streamWriter.WriteLine("\t\t}");
+
+
+
+                            //streamWriter.WriteLine("\t\tthis.obj." + column.Name.Trim() + " = myform.value." + column.Name.Trim() + "");
                             break;
                     }
                 }
